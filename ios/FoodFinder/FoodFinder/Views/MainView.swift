@@ -8,14 +8,34 @@
 import SwiftUI
 
 struct MainView: View {
+    @State private var searchQuery = ""
+    var service = DataService()
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            HStack {
+                TextField("Search for recipes", text: $searchQuery)
+                    .textFieldStyle(.roundedBorder)
+                Button {
+                    searchForRecipes()
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .padding(.horizontal)
+                        .padding(.vertical, 10)
+                        .background(.green)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+            }
         }
         .padding()
+    }
+    
+    func searchForRecipes() {
+        // TODO: Implement search feature
+        Task {
+            await service.getRecipes(term: searchQuery)
+        }
     }
 }
 
