@@ -8,19 +8,16 @@
 import SwiftUI
 
 struct MainView: View {
-    @State var recipes = [Recipe]()
-    
-    @State private var searchQuery = ""
-    @State private var selectedRecipe: Recipe?
-    var service = DataService()
+    @Environment(RecipeModel.self) var model
     
     var body: some View {
+        @Bindable var model = model
         VStack {
             HStack {
-                TextField("Search for recipes", text: $searchQuery)
+                TextField("Search for recipes", text: $model.searchQuery)
                     .textFieldStyle(.roundedBorder)
                 Button {
-                    searchForRecipes()
+                    model.searchForRecipes()
                 } label: {
                     Image(systemName: "magnifyingglass")
                         .padding(.horizontal)
@@ -30,7 +27,7 @@ struct MainView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }
-            List(recipes) { recipe in
+            List(model.recipes) { recipe in
                 HStack(spacing: 10) {
                     AsyncImage(url: URL(string: recipe.image)) { image in
                         image
@@ -44,25 +41,20 @@ struct MainView: View {
                     Text(recipe.title)
                 }
                 .onTapGesture {
-                    selectedRecipe = recipe
+                    model.selectedRecipe = recipe
                 }
             }
             .listStyle(.plain)
             .scrollIndicators(.hidden)
         }
-        .sheet(item: $selectedRecipe) { item in
-            RecipeDetailView(recipe: item)
+        .sheet(item: $model.selectedRecipe) { item in
+            RecipeDetailView()
         }
         .padding()
-    }
-    
-    func searchForRecipes() {
-        Task {
-            recipes = await service.getRecipes(term: searchQuery)
-        }
     }
 }
 
 #Preview {
     MainView()
+        .environment(RecipeModel())
 }
