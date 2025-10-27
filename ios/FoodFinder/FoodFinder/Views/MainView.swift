@@ -9,7 +9,9 @@ import SwiftUI
 
 struct MainView: View {
     @State var recipes = [Recipe]()
+    
     @State private var searchQuery = ""
+    @State private var selectedRecipe: Recipe?
     var service = DataService()
     
     var body: some View {
@@ -30,8 +32,14 @@ struct MainView: View {
             }
             List(recipes) { recipe in
                 Text(recipe.title)
+                    .onTapGesture {
+                        selectedRecipe = recipe
+                    }
             }
             .listStyle(.plain)
+        }
+        .sheet(item: $selectedRecipe) { item in
+            RecipeDetailView(recipe: item)
         }
         .padding()
     }
