@@ -31,12 +31,12 @@ struct MainView: View {
             List(recipes) { recipe in
                 Text(recipe.title)
             }
+            .listStyle(.plain)
         }
         .padding()
     }
     
     func searchForRecipes() {
-        // TODO: Implement search feature
         Task {
             recipes = await service.getRecipes(term: searchQuery)
         }
