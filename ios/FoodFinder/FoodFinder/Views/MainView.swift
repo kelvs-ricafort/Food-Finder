@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainView: View {
+    @State var recipes = [Recipe]()
     @State private var searchQuery = ""
     var service = DataService()
     
@@ -27,6 +28,9 @@ struct MainView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
             }
+            List(recipes) { recipe in
+                Text(recipe.title)
+            }
         }
         .padding()
     }
@@ -34,7 +38,7 @@ struct MainView: View {
     func searchForRecipes() {
         // TODO: Implement search feature
         Task {
-            await service.getRecipes(term: searchQuery)
+            recipes = await service.getRecipes(term: searchQuery)
         }
     }
 }

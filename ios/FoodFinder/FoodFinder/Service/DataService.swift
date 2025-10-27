@@ -10,10 +10,10 @@ import Foundation
 struct DataService {
     let apiKey = Bundle.main.infoDictionary?["API_KEY"] as? String
     
-    func getRecipes(term: String) async {
+    func getRecipes(term: String) async -> [Recipe] {
         // Check if api key exists
         guard apiKey != nil else {
-            return
+            return [Recipe]()
         }
         
         // 1. Create URL
@@ -26,19 +26,22 @@ struct DataService {
             
             // 3. Send Request
             do {
-                let (data, response) = try await URLSession.shared.data(for: request)
-                print(data)
-                print(response)
+                let (data, _) = try await URLSession.shared.data(for: request)
+                // 4. Parse the JSON
+                let decoder = JSONDecoder()
+                let recipeData = try decoder.decode(RecipeResponse.self, from: data)
+                return recipeData.results
             } catch {
                 print(error)
             }
         }
+        return [Recipe]()
     }
     
-    func getRecipe(by id: Int) async {
+    func getRecipe(by id: Int) async -> Recipe? {
         // Check if api key exists
         guard apiKey != nil else {
-            return
+            return nil
         }
         
         // 1. Create URL
@@ -51,12 +54,15 @@ struct DataService {
             
             // 3, Send request
             do {
-                let (data, response) = try await URLSession.shared.data(for: request)
-                print(data)
-                print(response)
+                let (data, _) = try await URLSession.shared.data(for: request)
+                // 4. Parse the JSON
+                let decoder = JSONDecoder()
+                let recipeData = try decoder.decode(Recipe.self, from: data)
+                return recipeData
             } catch {
                 print(error)
             }
         }
+        return nil
     }
 }
