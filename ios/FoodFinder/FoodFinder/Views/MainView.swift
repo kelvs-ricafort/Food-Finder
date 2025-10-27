@@ -31,12 +31,24 @@ struct MainView: View {
                 }
             }
             List(recipes) { recipe in
-                Text(recipe.title)
-                    .onTapGesture {
-                        selectedRecipe = recipe
+                HStack(spacing: 10) {
+                    AsyncImage(url: URL(string: recipe.image)) { image in
+                        image
+                            .resizable()
+                            .frame(width: 50, height: 50)
+                            .aspectRatio(contentMode: .fill)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } placeholder: {
+                        ProgressView()
                     }
+                    Text(recipe.title)
+                }
+                .onTapGesture {
+                    selectedRecipe = recipe
+                }
             }
             .listStyle(.plain)
+            .scrollIndicators(.hidden)
         }
         .sheet(item: $selectedRecipe) { item in
             RecipeDetailView(recipe: item)

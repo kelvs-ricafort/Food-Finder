@@ -11,7 +11,24 @@ struct RecipeDetailView: View {
     var recipe: Recipe?
     
     var body: some View {
-        Text(recipe?.title ?? "No recipe available")
+        VStack {
+            if let imageUrl = recipe?.image {
+                AsyncImage(url: URL(string: imageUrl)!) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(height: 164)
+                        .clipped()
+                } placeholder: {
+                    ProgressView()
+                        .frame(width: 50, height: 50)
+                }
+            } else {
+                Image("detail-placeholder-image")
+                    .resizable()
+                    .frame(height: 164)
+            }
+        }
     }
 }
 
