@@ -32,7 +32,8 @@ struct RecipeDetailView: View {
             }
             VStack {
                 Text(recipe?.title ?? "No Recipe Available")
-                    .font(.headline)
+                    .font(.largeTitle)
+                    .bold()
                 Divider()
                 HStack {
                     Image(systemName: "fork.knife.circle")
@@ -41,29 +42,69 @@ struct RecipeDetailView: View {
                     Text("\(recipe?.servings ?? 0) servings")
                 }
                 HStack {
-                    Image(systemName: "cooktop")
-                    Text("Cooking Minutes: ")
+                    Image(systemName: "timer")
+                    Text("Time: ")
                         .bold()
-                    Text("\(recipe?.cookingMinutes ?? 0) minutes")
+                    if let cooking = recipe?.cookingMinutes, cooking > 0 {
+                        Text("\(cooking) min cooking")
+                    } else if let ready = recipe?.readyInMinutes {
+                        Text("\(ready) min total")
+                    } else {
+                        Text("N/A")
+                    }
+                }
+                HStack {
+                    Image(systemName: "flame.fill")
+                    Text("Calories: ")
+                        .bold()
+                    if let calories = recipe?.nutrition?.nutrients.first(where: { $0.name == "Calories"}) {
+                        Text("\(Int(calories.amount)) \(calories.unit)")
+                    } else {
+                        Text("N/A")
+                    }
                 }
                 HStack {
                     Image(systemName: "globe")
                     Text("Source: ")
                         .bold()
-                    if let url = URL(string: "\(recipe?.spoonacularSourceUrl ?? "No link available")") {
+                    if let url = URL(string: "\(recipe?.sourceUrl ?? "No link available")") {
                         Link(destination: url) {
-                            Text("\(recipe?.spoonacularSourceUrl ?? "No link available")")
+                            Text("\(recipe?.sourceUrl ?? "No link available")")
                         }
                     } else {
-                        Text("\(recipe?.spoonacularSourceUrl ?? "No link available")")
+                        Text("\(recipe?.sourceUrl ?? "No link available")")
                             .lineLimit(2)
                     }
                 }
                 Spacer()
                 ScrollView {
+                    if let ingredients = recipe?.extendedIngredients {
+                        Text("Ingredients")
+                            .font(.headline)
+                        
+                        ForEach(ingredients) { ingredient in
+                            let amount = formatFraction(ingredient.amount)
+                            Text("• \(amount) \(ingredient.unit) \(ingredient.name)")
+                                .font(.body)
+                        }
+                    }
                     Text("Instructions: ")
-                        .bold()
-                    Text("\(recipe?.instructions ?? "No Cooking Instructions Available")")
+                        .font(.headline)
+                    
+                    if let steps = recipe?.formattedInstructions, !steps.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(steps.indices, id: \.self) { index in
+                                HStack(alignment: .top) {
+                                    Text("\(index + 1).")
+                                        .bold()
+                                    Text(steps[index])
+                                }
+                            }
+                        }
+                    } else {
+                        Text("No instructions available.")
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             .padding(.horizontal)

@@ -45,7 +45,7 @@ struct DataService {
         }
         
         // 1. Create URL
-        let urlString = "https://api.spoonacular.com/recipes/\(id)/information"
+        let urlString = "https://api.spoonacular.com/recipes/\(id)/information?includeNutrition=true"
         if let url = URL(string: urlString) {
             
             // 2. Create request
