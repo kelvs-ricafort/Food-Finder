@@ -50,8 +50,14 @@ struct RecipeDetailView: View {
                     Image(systemName: "globe")
                     Text("Source: ")
                         .bold()
-                    Text("\(recipe?.spoonacularSourceUrl ?? "No link available")")
-                        .lineLimit(2)
+                    if let url = URL(string: "\(recipe?.spoonacularSourceUrl ?? "No link available")") {
+                        Link(destination: url) {
+                            Text("\(recipe?.spoonacularSourceUrl ?? "No link available")")
+                        }
+                    } else {
+                        Text("\(recipe?.spoonacularSourceUrl ?? "No link available")")
+                            .lineLimit(2)
+                    }
                 }
                 Spacer()
                 ScrollView {
